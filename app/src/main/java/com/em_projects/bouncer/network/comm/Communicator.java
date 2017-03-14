@@ -1,7 +1,5 @@
 package com.em_projects.bouncer.network.comm;
 
-// import android.graphics.Bitmap;
-
 import android.util.Log;
 
 import com.em_projects.bouncer.config.Constants;
@@ -27,13 +25,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-//import org.apache.http.entity.mime.HttpMultipartMode;
-//import org.apache.http.entity.mime.MultipartEntity;
-//import org.apache.http.entity.mime.content.ByteArrayBody;
-//import org.apache.http.entity.mime.content.StringBody;
-
-
-@SuppressWarnings("deprecation")
 public class Communicator implements Runnable {
 
     private static final String TAG = "Communicator";
@@ -63,14 +54,6 @@ public class Communicator implements Runnable {
         return instance;
     }
 
-//    public void uploadPicture(String riddle, Bitmap bitmap, CommListener commListener) throws UnsupportedEncodingException {
-//        String request = Constants.SERVER.URL + "/UploadPicture";
-//        MultipartEntity multipartEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
-//        multipartEntity.addPart("riddle", new StringBody(riddle));
-//        multipartEntity.addPart("image", new ByteArrayBody(ImageUtils.convertBitmap2ByteArray(bitmap), String.valueOf(System.currentTimeMillis()) + ".png"));
-//        sendRequest(Constants.SERVER.HTTP_POST, request, (HttpEntity) multipartEntity, null, commListener);
-//    }
-
     public void registration(String name, String phone, CommListener commListener) throws UnsupportedEncodingException {
         String serverUrl = Constants.SERVER.URL + "/register";
         Map<String, String> params = new HashMap<String, String>();
@@ -79,14 +62,6 @@ public class Communicator implements Runnable {
 
         post(serverUrl, params, commListener);
     }
-
-//    private void sendRequest(final String serverURL, final Map<String, String> params, CommListener listener) {
-//        Log.d(TAG, "sendRequest");
-//        queue.add(new RequestHolder(serverURL, params, listener));
-//        synchronized (monitor) {
-//            monitor.notify();
-//        }
-//    }
 
     @Override
     public void run() {
@@ -202,78 +177,12 @@ public class Communicator implements Runnable {
         return stringBuffer.toString();
     }
 
-//    private synchronized String transmitData(int method, String request, HttpEntity httpEntity, ArrayList<NameValuePair> nameValuePairs) throws IOException {
-//        BufferedReader bufferedReader = null;
-//        Log.d(TAG, "transmitData");
-//        String data = null;
-//        if (method == Constants.SERVER.HTTP_POST) {
-//            if (httpEntity == null) {
-//                throw new NullPointerException("HttpEntity can not be null when POST method is applied!");
-//            }
-//            HttpPost httpPost = new HttpPost(request);
-//            httpPost.setEntity(httpEntity); // (new UrlEncodedFormEntity(nameValuePairs));
-//            HttpResponse httpResponse = client.execute(httpPost);
-//            InputStream is = httpResponse.getEntity().getContent();
-//            InputStreamReader isr = new InputStreamReader(is, "UTF-8");
-//            bufferedReader = new BufferedReader(isr);
-//            StringBuffer stringBuffer = new StringBuffer("");
-//            String line = "";
-//            while ((line = bufferedReader.readLine()) != null) {
-//                stringBuffer.append(line);
-//            }
-//            bufferedReader.close();
-//            data = stringBuffer.toString();
-//        } else if (method == Constants.SERVER.HTTP_GET) {       // Handling GET
-//            if (nameValuePairs == null) {
-//                throw new NullPointerException("NameValuePairs can not be null when GET method is applied!");
-//            }
-//            String realRequest = getRequestBuilder(request, nameValuePairs);
-//            HttpGet httpGet = new HttpGet(realRequest);
-//            HttpResponse httpResponse = client.execute(httpGet);
-//            InputStream is = httpResponse.getEntity().getContent();
-//            InputStreamReader isr = new InputStreamReader(is, "UTF-8");
-//            bufferedReader = new BufferedReader(isr);
-//            StringBuffer stringBuffer = new StringBuffer("");
-//            String line = "";
-//            while ((line = bufferedReader.readLine()) != null) {
-//                stringBuffer.append(line);
-//            }
-//            bufferedReader.close();
-//            data = stringBuffer.toString();
-//        } else if (method == Constants.SERVER.HTTP_SOCKET) {
-//            // DO Nothing Yet!
-//        }
-//        return data;
-//    }
-
-
     private void post(final String serverURL, final Map<String, String> params, CommListener listener) {
         queue.add(new RequestHolder(serverURL, params, listener));
         synchronized (monitor) {
             monitor.notifyAll();
         }
     }
-
-//    private String getRequestBuilder(String request, ArrayList<NameValuePair> nameValuePairs) {
-//        if (request.endsWith("/")) {
-//            request = request.substring(0, request.length() - 1);
-//        }
-//        StringBuilder stringBuilder = new StringBuilder(request);
-//        if (nameValuePairs.size() > 0) {
-//            stringBuilder.append("?");
-//            NameValuePair tempNameValuePair = null;
-//            for (int i = 0; i < nameValuePairs.size(); i++) {
-//                tempNameValuePair = nameValuePairs.get(i);
-//                stringBuilder.append(tempNameValuePair.getName());
-//                stringBuilder.append("=");
-//                stringBuilder.append(tempNameValuePair.getValue());
-//                if (i < nameValuePairs.size() - 1) {
-//                    stringBuilder.append("&");
-//                }
-//            }
-//        }
-//        return stringBuilder.toString();
-//    }
 
     @Override
     protected void finalize() throws Throwable {
