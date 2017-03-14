@@ -5,11 +5,11 @@ package com.em_projects.bouncer.network.comm;
 import android.util.Log;
 
 import com.em_projects.bouncer.config.Constants;
-import com.em_projects.bouncer.utils.StringUtils;
+import com.em_projects.utils.StringUtil;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
@@ -21,7 +21,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 //import org.apache.http.entity.mime.HttpMultipartMode;
 //import org.apache.http.entity.mime.MultipartEntity;
@@ -68,20 +72,21 @@ public class Communicator implements Runnable {
 //    }
 
     public void registration(String name, String phone, CommListener commListener) throws UnsupportedEncodingException {
-        String request = Constants.SERVER.URL + "/register";
-        ArrayList<NameValuePair> emNameValuePairs = new ArrayList<NameValuePair>(2);
-        emNameValuePairs.add(new EmNameValuePair("name", name));
-        emNameValuePairs.add(new EmNameValuePair("phone", phone));
-        sendRequest(Constants.SERVER.HTTP_POST, request, new UrlEncodedFormEntity(emNameValuePairs), null, commListener);
+        String serverUrl = Constants.SERVER.URL + "/register";
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("name", name);
+        params.put("phone", phone);
+
+        post(serverUrl, params, commListener);
     }
 
-    private void sendRequest(int httpMethod, String request, HttpEntity entity, ArrayList<NameValuePair> nameValuePairs, CommListener listener) {
-        Log.d(TAG, "sendRequest");
-        queue.add(new RequestHolder(httpMethod, request, entity, nameValuePairs, listener));
-        synchronized (monitor) {
-            monitor.notify();
-        }
-    }
+//    private void sendRequest(final String serverURL, final Map<String, String> params, CommListener listener) {
+//        Log.d(TAG, "sendRequest");
+//        queue.add(new RequestHolder(serverURL, params, listener));
+//        synchronized (monitor) {
+//            monitor.notify();
+//        }
+//    }
 
     @Override
     public void run() {
@@ -100,9 +105,9 @@ public class Communicator implements Runnable {
                 requestHolder = queue.remove(0);
                 if (requestHolder != null) {
                     Log.d(TAG, "run " + requestHolder.toString());
-                    response = transmitData(requestHolder.getHttpMethod(), requestHolder.getRequest(), requestHolder.getHttpEntity(), requestHolder.getNameValuePairs());
+                    response = transmitData(requestHolder);
                     if (requestHolder.getListener() != null) {
-                        if (StringUtils.isNullOrEmpty(response)) {
+                        if (StringUtil.isNullOrEmpty(response)) {
                             requestHolder.getListener().exceptionThrown(new Exception());
                         } else {
                             requestHolder.getListener().newDataArrived(response);
@@ -120,71 +125,155 @@ public class Communicator implements Runnable {
         }
     }
 
-    private synchronized String transmitData(int method, String request, HttpEntity httpEntity, ArrayList<NameValuePair> nameValuePairs) throws IOException {
-        BufferedReader bufferedReader = null;
-        Log.d(TAG, "transmitData");
-        String data = null;
-        if (method == Constants.SERVER.HTTP_POST) {
-            if (httpEntity == null) {
-                throw new NullPointerException("HttpEntity can not be null when POST method is applied!");
-            }
-            HttpPost httpPost = new HttpPost(request);
-            httpPost.setEntity(httpEntity); // (new UrlEncodedFormEntity(nameValuePairs));
-            HttpResponse httpResponse = client.execute(httpPost);
-            InputStream is = httpResponse.getEntity().getContent();
-            InputStreamReader isr = new InputStreamReader(is, "UTF-8");
-            bufferedReader = new BufferedReader(isr);
-            StringBuffer stringBuffer = new StringBuffer("");
-            String line = "";
-            while ((line = bufferedReader.readLine()) != null) {
-                stringBuffer.append(line);
-            }
-            bufferedReader.close();
-            data = stringBuffer.toString();
-        } else if (method == Constants.SERVER.HTTP_GET) {       // Handling GET
-            if (nameValuePairs == null) {
-                throw new NullPointerException("NameValuePairs can not be null when GET method is applied!");
-            }
-            String realRequest = getRequestBuilder(request, nameValuePairs);
-            HttpGet httpGet = new HttpGet(realRequest);
-            HttpResponse httpResponse = client.execute(httpGet);
-            InputStream is = httpResponse.getEntity().getContent();
-            InputStreamReader isr = new InputStreamReader(is, "UTF-8");
-            bufferedReader = new BufferedReader(isr);
-            StringBuffer stringBuffer = new StringBuffer("");
-            String line = "";
-            while ((line = bufferedReader.readLine()) != null) {
-                stringBuffer.append(line);
-            }
-            bufferedReader.close();
-            data = stringBuffer.toString();
-        } else if (method == Constants.SERVER.HTTP_SOCKET) {
-            // DO Nothing Yet!
+    private String transmitData(RequestHolder commRequest) throws IOException {
+        Map<String, String> params = commRequest.getParams();
+        RequestHolder.MethodType method = commRequest.getMethodType();
+        String serverUrl = commRequest.getServerURL();
+        HttpResponse httpResponse = null;
+        HttpClient client = new DefaultHttpClient();
+        if (method == RequestHolder.MethodType.GET) {
+            String body = encodeParams(params);
+            String urlString = serverUrl + "?" + body;
+            Log.d(TAG, "transmitData urlString: " + urlString);
+            HttpGet request = new HttpGet(urlString);
+            httpResponse = client.execute(request);
+        } else if (method == RequestHolder.MethodType.POST) {
+            HttpPost httpPost = new HttpPost(serverUrl);
+            ArrayList<NameValuePair> nameValuePairs = convertMapToNameValuePairs(params);
+            Log.d(TAG, "transmitData urlString: " + serverUrl);
+            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+            httpResponse = client.execute(httpPost);
         }
-        return data;
+
+        // Check if server response is valid
+        StatusLine status = httpResponse.getStatusLine();
+        if (status.getStatusCode() != 200) {
+            throw new IOException("Invalid response from server: " + status.toString());
+        }
+        // Return result from buffered stream
+        String answer = handleHttpResponse(httpResponse);
+        return answer;
     }
 
-
-    private String getRequestBuilder(String request, ArrayList<NameValuePair> nameValuePairs) {
-        if (request.endsWith("/")) {
-            request = request.substring(0, request.length() - 1);
-        }
-        StringBuilder stringBuilder = new StringBuilder(request);
-        if (nameValuePairs.size() > 0) {
-            stringBuilder.append("?");
-            NameValuePair tempNameValuePair = null;
-            for (int i = 0; i < nameValuePairs.size(); i++) {
-                tempNameValuePair = nameValuePairs.get(i);
-                stringBuilder.append(tempNameValuePair.getName());
-                stringBuilder.append("=");
-                stringBuilder.append(tempNameValuePair.getValue());
-                if (i < nameValuePairs.size() - 1) {
-                    stringBuilder.append("&");
+    // constructs the GET body using the parameters
+    private String encodeParams(Map<String, String> params) {
+        StringBuilder bodyBuilder = new StringBuilder();
+        Iterator<Map.Entry<String, String>> iterator = params.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, String> param = iterator.next();
+            if (param.getValue() != null) {
+                try {
+                    bodyBuilder.append(param.getKey()).append('=').append(URLEncoder.encode(param.getValue(), "utf-8"));
+                } catch (UnsupportedEncodingException e) {
+                    Log.e(TAG, "encodeParams", e);
+                }
+                if (iterator.hasNext()) {
+                    bodyBuilder.append('&');
                 }
             }
         }
-        return stringBuilder.toString();
+        return bodyBuilder.toString();
     }
+
+    // constructs the POST body using the parameters
+    private ArrayList<NameValuePair> convertMapToNameValuePairs(Map<String, String> params) {
+        Iterator<Map.Entry<String, String>> iterator = params.entrySet().iterator();
+        ArrayList<NameValuePair> nameValuePairs = new ArrayList(params.size());
+        // constructs the POST body using the parameters
+        while (iterator.hasNext()) {
+            Map.Entry<String, String> param = iterator.next();
+            if (param.getValue() != null) {
+                nameValuePairs.add(new EmNameValuePair(param.getKey(), param.getValue()));
+            }
+        }
+        return nameValuePairs;
+    }
+
+    private String handleHttpResponse(HttpResponse httpResponse) throws IllegalStateException, IOException {
+        InputStream is = httpResponse.getEntity().getContent();
+        InputStreamReader isr = new InputStreamReader(is, "UTF-8");
+        BufferedReader bufferedReader = new BufferedReader(isr);
+        StringBuffer stringBuffer = new StringBuffer("");
+        String line = "";
+        while ((line = bufferedReader.readLine()) != null) {
+            stringBuffer.append(line);
+        }
+        bufferedReader.close();
+        return stringBuffer.toString();
+    }
+
+//    private synchronized String transmitData(int method, String request, HttpEntity httpEntity, ArrayList<NameValuePair> nameValuePairs) throws IOException {
+//        BufferedReader bufferedReader = null;
+//        Log.d(TAG, "transmitData");
+//        String data = null;
+//        if (method == Constants.SERVER.HTTP_POST) {
+//            if (httpEntity == null) {
+//                throw new NullPointerException("HttpEntity can not be null when POST method is applied!");
+//            }
+//            HttpPost httpPost = new HttpPost(request);
+//            httpPost.setEntity(httpEntity); // (new UrlEncodedFormEntity(nameValuePairs));
+//            HttpResponse httpResponse = client.execute(httpPost);
+//            InputStream is = httpResponse.getEntity().getContent();
+//            InputStreamReader isr = new InputStreamReader(is, "UTF-8");
+//            bufferedReader = new BufferedReader(isr);
+//            StringBuffer stringBuffer = new StringBuffer("");
+//            String line = "";
+//            while ((line = bufferedReader.readLine()) != null) {
+//                stringBuffer.append(line);
+//            }
+//            bufferedReader.close();
+//            data = stringBuffer.toString();
+//        } else if (method == Constants.SERVER.HTTP_GET) {       // Handling GET
+//            if (nameValuePairs == null) {
+//                throw new NullPointerException("NameValuePairs can not be null when GET method is applied!");
+//            }
+//            String realRequest = getRequestBuilder(request, nameValuePairs);
+//            HttpGet httpGet = new HttpGet(realRequest);
+//            HttpResponse httpResponse = client.execute(httpGet);
+//            InputStream is = httpResponse.getEntity().getContent();
+//            InputStreamReader isr = new InputStreamReader(is, "UTF-8");
+//            bufferedReader = new BufferedReader(isr);
+//            StringBuffer stringBuffer = new StringBuffer("");
+//            String line = "";
+//            while ((line = bufferedReader.readLine()) != null) {
+//                stringBuffer.append(line);
+//            }
+//            bufferedReader.close();
+//            data = stringBuffer.toString();
+//        } else if (method == Constants.SERVER.HTTP_SOCKET) {
+//            // DO Nothing Yet!
+//        }
+//        return data;
+//    }
+
+
+    private void post(final String serverURL, final Map<String, String> params, CommListener listener) {
+        queue.add(new RequestHolder(serverURL, params, listener));
+        synchronized (monitor) {
+            monitor.notifyAll();
+        }
+    }
+
+//    private String getRequestBuilder(String request, ArrayList<NameValuePair> nameValuePairs) {
+//        if (request.endsWith("/")) {
+//            request = request.substring(0, request.length() - 1);
+//        }
+//        StringBuilder stringBuilder = new StringBuilder(request);
+//        if (nameValuePairs.size() > 0) {
+//            stringBuilder.append("?");
+//            NameValuePair tempNameValuePair = null;
+//            for (int i = 0; i < nameValuePairs.size(); i++) {
+//                tempNameValuePair = nameValuePairs.get(i);
+//                stringBuilder.append(tempNameValuePair.getName());
+//                stringBuilder.append("=");
+//                stringBuilder.append(tempNameValuePair.getValue());
+//                if (i < nameValuePairs.size() - 1) {
+//                    stringBuilder.append("&");
+//                }
+//            }
+//        }
+//        return stringBuilder.toString();
+//    }
 
     @Override
     protected void finalize() throws Throwable {

@@ -1,11 +1,6 @@
 package com.em_projects.bouncer.network.comm;
 
-import com.em_projects.bouncer.config.Constants;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.NameValuePair;
-
-import java.util.ArrayList;
+import java.util.Map;
 
 
 // http://stackoverflow.com/questions/6028981/using-httpclient-and-httppost-in-android-with-post-parameters
@@ -14,39 +9,42 @@ import java.util.ArrayList;
 
 public class RequestHolder {
 
-    private String request = null;
-    private HttpEntity httpEntity;
+    private String serverURL;
+    ;
+    private Map<String, String> params;
     private CommListener listener;
-    private ArrayList<NameValuePair> nameValuePairs;
-    private int httpMethod = Constants.SERVER.HTTP_POST;
+    private MethodType methodType;
 
-
-    public RequestHolder(int httpMethod, String request, HttpEntity httpEntity, ArrayList<NameValuePair> nameValuePairs, CommListener listener) {
-        super();
-        this.request = request;
+    public RequestHolder(String serverURL, Map<String, String> params, CommListener listener) {
+        this.serverURL = serverURL;
+        this.params = params;
         this.listener = listener;
-        this.httpMethod = httpMethod;
-        this.httpEntity = httpEntity;
-        this.nameValuePairs = nameValuePairs;
+        this.methodType = MethodType.POST;
     }
 
-    public int getHttpMethod() {
-        return httpMethod;
+
+    public RequestHolder(String serverURL, Map<String, String> params, MethodType methodType, CommListener listener) {
+        this.serverURL = serverURL;
+        this.params = params;
+        this.listener = listener;
+        this.methodType = methodType;
     }
 
-    public String getRequest() {
-        return request;
+    public String getServerURL() {
+        return serverURL;
     }
 
-    public HttpEntity getHttpEntity() {
-        return httpEntity;
+    public Map<String, String> getParams() {
+        return params;
     }
 
     public CommListener getListener() {
         return listener;
     }
 
-    public ArrayList<NameValuePair> getNameValuePairs() {
-        return nameValuePairs;
+    public MethodType getMethodType() {
+        return methodType;
     }
+
+    public enum MethodType {GET, POST, SOCKET}
 }
