@@ -1,0 +1,36 @@
+package ktk.em_projects.com.ktk.network.comm;
+
+public class NameValuePair {
+
+	private String name = null;
+	private String value = null;
+
+	public NameValuePair(String name, String value) {
+		this.name = name;
+		this.value = value;
+	}
+
+	public NameValuePair(String name, long value) {
+		this.name = name;
+		this.value = String.valueOf(value);
+	}
+
+	public NameValuePair(String name, int value) {
+		this.name = name;
+		this.value = String.valueOf(value);
+	}
+
+	public NameValuePair(String name, boolean value) {
+		this.name = name;
+		this.value = String.valueOf(value);
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+}
