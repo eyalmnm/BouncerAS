@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/privacy">
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="privacy_mode_check_box"
+            android:summaryOff="@string/privacy_mode_off"
+            android:summaryOn="@string/privacy_mode_on"
+            android:title="@string/privacy_mode" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/password">
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="request_password_every_launch"
+            android:summary="@string/request_password_every_launch"
+            android:title="@string/automatic_lock" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="locking_timer"
+            android:title="@string/locking_timer" />
+
+        <Preference
+            android:key="change_locking_timer"
+            android:summary="@string/change_locking_timer_click"
+            android:title="@string/change_locking_timer" />
+
+        <Preference
+            android:key="change_password"
+            android:summary="@string/change_password_click"
+            android:title="@string/change_password" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

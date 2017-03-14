@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/theme_bg"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/headerBg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/header_bg" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/headerBg"
+        android:layout_marginBottom="5dip"
+        android:background="@drawable/chat_header"
+        android:gravity="center_vertical|center_horizontal"
+        android:textColor="#666"
+        android:textSize="18dip"
+        android:textStyle="bold" />
+
+    <ListView
+        android:id="@+id/scrollBubbles"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/scrollNewSms"
+        android:layout_below="@id/title"
+        android:cacheColorHint="@android:color/transparent"
+        android:listSelector="@drawable/list_item_background" />
+
+    <ScrollView
+        android:id="@+id/scrollNewSms"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dip"
+        android:layout_marginTop="5dip"
+        android:background="@drawable/search_item_bg">
+
+        <RelativeLayout
+            android:id="@+id/newSms"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/editSms"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="14dip"
+                android:layout_marginRight="10dip"
+                android:layout_toLeftOf="@+id/sendSmsButton"
+                android:background="@drawable/edittext_modified"
+                android:capitalize="sentences"
+                android:hint="@string/edit_sms_hint"
+                android:maxLines="4"
+                android:textSize="14dip" />
+
+            <Button
+                android:id="@+id/sendSmsButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="14dip"
+                android:background="@drawable/button_item"
+                android:text="@string/send"
+                android:textSize="14dip" />
+
+        </RelativeLayout>
+    </ScrollView>
+</RelativeLayout>
