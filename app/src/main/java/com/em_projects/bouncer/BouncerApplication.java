@@ -12,6 +12,8 @@ import com.em_projects.infra.application.BasicApplication;
 
 import java.lang.reflect.Method;
 
+import io.paperdb.Paper;
+
 public class BouncerApplication extends BasicApplication<BouncerUserSession> {
 
     private static final String TAG = "BouncerApplication";
@@ -29,6 +31,9 @@ public class BouncerApplication extends BasicApplication<BouncerUserSession> {
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "onCreate");
+
+        // Init Paper
+        Paper.init(this);
 
         //open/create application databases
         ContactsDbHelper.getInstance().open();

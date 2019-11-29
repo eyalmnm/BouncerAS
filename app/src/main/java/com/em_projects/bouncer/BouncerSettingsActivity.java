@@ -16,8 +16,8 @@ import android.widget.EditText;
 
 import com.cellebrite.ota.socialphonebook.utilities.StringUtilities;
 import com.em_projects.bouncer.repositories.ContactsRepository;
-import com.em_projects.bouncer.utils.Utils;
 import com.em_projects.infra.activity.BasicActivity;
+import com.em_projects.utils.Utils;
 
 import java.util.Vector;
 
@@ -47,8 +47,8 @@ public class BouncerSettingsActivity extends PreferenceActivity {
         CheckBoxPreference privacyStatus = (CheckBoxPreference) findPreference("privacy_mode_check_box");
         final CheckBoxPreference requestPasswordEveryLaunch = (CheckBoxPreference) findPreference("request_password_every_launch");
         final CheckBoxPreference lockingTimer = (CheckBoxPreference) findPreference("locking_timer");
-        final Preference changeLockingTimerButton = (Preference) findPreference("change_locking_timer");
-        Preference changePasswordButton = (Preference) findPreference("change_password");
+        final Preference changeLockingTimerButton = findPreference("change_locking_timer");
+        Preference changePasswordButton = findPreference("change_password");
 
         // get privacy ststus from user session
         b_isPrivacyOn = m_userSession.IsPrivacyOn;
@@ -141,7 +141,7 @@ public class BouncerSettingsActivity extends PreferenceActivity {
 
                 // update user session
                 m_userSession.IsAutomaticLock = bNewValue;
-                m_userSession.IsRequestPasswordTimer = lockingTimer.isChecked() ? true : false;
+                m_userSession.IsRequestPasswordTimer = lockingTimer.isChecked();
                 BouncerApplication.getApplication().storeUserSession();
 
                 return true;
@@ -180,13 +180,13 @@ public class BouncerSettingsActivity extends PreferenceActivity {
                 changeTimeDialog.setTitle(R.string.change_time_dialog_title);
 
                 // add hint to the edit-text in the dialog
-                final EditText editTime = (EditText) changeTimeDialog.findViewById(R.id.editTime);
+                final EditText editTime = changeTimeDialog.findViewById(R.id.editTime);
                 String minutesStr = String.valueOf(m_userSession.RequestPasswordTime);
                 editTime.setHint(minutesStr);
 
                 // get the 'save' and 'cancel' buttons
-                Button saveButton = (Button) changeTimeDialog.findViewById(R.id.saveButton);
-                Button cancelButton = (Button) changeTimeDialog.findViewById(R.id.cancelButton);
+                Button saveButton = changeTimeDialog.findViewById(R.id.saveButton);
+                Button cancelButton = changeTimeDialog.findViewById(R.id.cancelButton);
 
                 // set onClickListener to the save button
                 saveButton.setOnClickListener(new View.OnClickListener() {

@@ -9,8 +9,8 @@ import com.cellebrite.ota.socialphonebook.utilities.StringUtilities;
 import com.em_projects.bouncer.BouncerApplication;
 import com.em_projects.bouncer.BouncerUserSession;
 import com.em_projects.bouncer.R;
-import com.em_projects.bouncer.utils.Utils;
 import com.em_projects.infra.views.controllers.ViewController;
+import com.em_projects.utils.Utils;
 
 public class ChangePasswordScreenViewController implements ViewController {
     private static final String TAG = "ChangePwdScrnVwCntrlr";
@@ -18,10 +18,10 @@ public class ChangePasswordScreenViewController implements ViewController {
     @Override
     public void attachController(View view) {
         Log.d(TAG, "attachController");
-        Button saveButton = (Button) view.findViewById(R.id.button);
-        final EditText oldPassword = (EditText) view.findViewById(R.id.editText1);
-        final EditText newPassword = (EditText) view.findViewById(R.id.editText2);
-        final EditText confirmNewPassword = (EditText) view.findViewById(R.id.editText3);
+        Button saveButton = view.findViewById(R.id.button);
+        final EditText oldPassword = view.findViewById(R.id.editText1);
+        final EditText newPassword = view.findViewById(R.id.editText2);
+        final EditText confirmNewPassword = view.findViewById(R.id.editText3);
         final BouncerUserSession userSession = BouncerApplication.getApplication().getUserSession();
 
         // onClick for the save button

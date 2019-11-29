@@ -16,9 +16,9 @@ import com.em_projects.bouncer.R;
 import com.em_projects.bouncer.helpers.ContactsDbHelper;
 import com.em_projects.bouncer.model.Contact;
 import com.em_projects.bouncer.model.Phone;
-import com.em_projects.bouncer.utils.Utils;
 import com.em_projects.infra.application.BasicApplication;
 import com.em_projects.infra.repositories.EntityRepositoryWithCache;
+import com.em_projects.utils.Utils;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;

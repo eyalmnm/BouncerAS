@@ -66,5 +66,11 @@
     <string name="contact_context_menu_edit">Edit Contact</string>
     <string name="contact_context_menu_hide">Hide</string>
     <string name="contact_context_menu_unhide">Unhide</string>
+    <string name="onboard_permissions_title">Onboard Permissions Title</string>
+    <string name="onboard_permissions_subtitle">Onboard Permissions Subtitle</string>
+    <string name="allow_permissions">Allow Permissions</string>
+    <string name="skip_permissions">Skip Permissions</string>
+    <string name="returned_from_app_settings_to_activity">Returned from app settings to MainActivity with the following         permissions: \\\\nPermissions: %ss_to_activity</string>
+    <string name="must_garnt_permission">In order to use the application clearly, you must grant the required permissions.</string>
 
 </resources>

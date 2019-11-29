@@ -8,6 +8,7 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.em_projects.bouncer.views.OnBoardPermissionsActivity;
 import com.em_projects.infra.activity.BasicActivity;
 
 public class BouncerSplashScreenActivity extends BasicActivity {
@@ -24,20 +25,8 @@ public class BouncerSplashScreenActivity extends BasicActivity {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case STOPSPLASH: {
-                    // save the time splash is closed
-                    BouncerProperties.LAST_ON_PAUSE_TIME = System.currentTimeMillis();
-
-                    // if automatic lock is checked start bouncer login activity, else start main screen
-                    Intent intent;
-                    boolean isRequestLock = ((BouncerUserSession) BouncerApplication.getApplication().getUserSession()).IsAutomaticLock
-                            || ((BouncerUserSession) BouncerApplication.getApplication().getUserSession()).IsRequestPasswordTimer;
-                    if (isRequestLock)
-                        intent = new Intent(getBaseContext(), BouncerLoginActivity.class);
-                    else
-                        intent = new Intent(getBaseContext(), BouncerActivity.class);
+                    Intent intent = new Intent(BouncerSplashScreenActivity.this, OnBoardPermissionsActivity.class);
                     startNewActivity(intent, true);
-
-                    break;
                 }
             }
             super.handleMessage(msg);
@@ -65,7 +54,7 @@ public class BouncerSplashScreenActivity extends BasicActivity {
         }
 
         //set application version text
-        TextView appVersion = (TextView) findViewById(R.id.app_version);
+        TextView appVersion = findViewById(R.id.app_version);
         appVersion.setText(BouncerProperties.APP_VERSION);
 
         // set message to stop the splash screen.

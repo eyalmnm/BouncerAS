@@ -6,10 +6,10 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.em_projects.bouncer.BouncerApplication;
-import com.em_projects.bouncer.utils.Utils;
 import com.em_projects.bouncer.views.model.MainScreenViewModel;
 import com.em_projects.infra.views.builders.TabHostViewBuilder;
 import com.em_projects.infra.views.controllers.ViewController;
+import com.em_projects.utils.Utils;
 
 public class MainScreenViewBuilderController extends TabHostViewBuilder<MainScreenViewModel> implements ViewController {
     private static final String TAG = "MainScreenVwBldrCntrlr";

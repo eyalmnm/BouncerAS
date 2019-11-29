@@ -12,8 +12,8 @@ import com.em_projects.bouncer.BouncerActivity;
 import com.em_projects.bouncer.BouncerApplication;
 import com.em_projects.bouncer.BouncerUserSession;
 import com.em_projects.bouncer.R;
-import com.em_projects.bouncer.utils.Utils;
 import com.em_projects.infra.views.controllers.ViewController;
+import com.em_projects.utils.Utils;
 
 public class FirstLoginScreenViewController implements ViewController {
     private static final String TAG = "FirstLoginScrnVwCntrlr";
@@ -21,9 +21,9 @@ public class FirstLoginScreenViewController implements ViewController {
     @Override
     public void attachController(View view) {
         Log.d(TAG, "attachController");
-        final Button loginButton = (Button) view.findViewById(R.id.button);
-        final EditText password = (EditText) view.findViewById(R.id.editText1);
-        final EditText confirmPassword = (EditText) view.findViewById(R.id.editText2);
+        final Button loginButton = view.findViewById(R.id.button);
+        final EditText password = view.findViewById(R.id.editText1);
+        final EditText confirmPassword = view.findViewById(R.id.editText2);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override

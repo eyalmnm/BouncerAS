@@ -34,12 +34,12 @@ import com.em_projects.bouncer.R;
 import com.em_projects.bouncer.model.Contact;
 import com.em_projects.bouncer.model.Phone;
 import com.em_projects.bouncer.repositories.ContactsRepository;
-import com.em_projects.bouncer.utils.Utils;
 import com.em_projects.bouncer.views.model.ContactViewModel;
 import com.em_projects.bouncer.views.model.ContactsViewModel;
 import com.em_projects.infra.activity.BasicActivity;
 import com.em_projects.infra.views.buildercontrollers.TabViewBuilderController;
 import com.em_projects.infra.views.controllers.ViewController;
+import com.em_projects.utils.Utils;
 
 import java.util.Collections;
 import java.util.Vector;
@@ -113,7 +113,7 @@ public class ContactsViewBuilderController extends TabViewBuilderController<Cont
     public void attachController(final View view) {
         Log.d(TAG, "attachController");
         //get the search textfield and attach its listener
-        final EditText searchTxt = (EditText) view.findViewById(R.id.search_txt);
+        final EditText searchTxt = view.findViewById(R.id.search_txt);
         searchTxt.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -130,7 +130,7 @@ public class ContactsViewBuilderController extends TabViewBuilderController<Cont
         });
 
         //get the search button and set it's listener
-        Button searchButton = (Button) view.findViewById(R.id.search_btn);
+        Button searchButton = view.findViewById(R.id.search_btn);
         searchButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -139,7 +139,7 @@ public class ContactsViewBuilderController extends TabViewBuilderController<Cont
         });
 
         //get the list view and set its adapter
-        ListView lv = (ListView) view.findViewById(R.id.list_view);
+        ListView lv = view.findViewById(R.id.list_view);
         lv.setAdapter(m_adapter);
     }
 
@@ -307,7 +307,7 @@ public class ContactsViewBuilderController extends TabViewBuilderController<Cont
                 convertView = inflater.inflate(R.layout.contact_list_item, null);
 
             //set contact's photo view params
-            ImageView photo = (ImageView) convertView.findViewById(R.id.photo_bg);
+            ImageView photo = convertView.findViewById(R.id.photo_bg);
             byte[] photoData = c.getPhotoData();
             if (photoData != null) {
                 Bitmap photoBitmap = BitmapFactory.decodeByteArray(photoData, 0, photoData.length);
@@ -320,19 +320,19 @@ public class ContactsViewBuilderController extends TabViewBuilderController<Cont
             photo.setOnClickListener(contactItemClickListener);
 
             //set list-view item params
-            TextView fullName = (TextView) convertView.findViewById(R.id.display_name);
+            TextView fullName = convertView.findViewById(R.id.display_name);
             fullName.setText(c.getDisplayName());
-            ImageButton hideStatusBtn = (ImageButton) convertView.findViewById(R.id.hide_btn);
+            ImageButton hideStatusBtn = convertView.findViewById(R.id.hide_btn);
             hideStatusBtn.setBackgroundResource(cvm.IsHidden ? R.drawable.hidden_contact_on : R.drawable.hidden_contact_off);
 
             //get display name layout container, set it as clickable and set on-click listener
-            LinearLayout displayName = (LinearLayout) convertView.findViewById(R.id.display_name_container);
+            LinearLayout displayName = convertView.findViewById(R.id.display_name_container);
             displayName.setClickable(true);
             displayName.setTag(cvm);
             displayName.setOnClickListener(contactItemClickListener);
 
             //set item's on-click listeners
-            LinearLayout buttons = (LinearLayout) convertView.findViewById(R.id.buttons);
+            LinearLayout buttons = convertView.findViewById(R.id.buttons);
             int numOfButtons = buttons.getChildCount();
             for (int i = 0; i < numOfButtons; ++i) {
                 ImageButton button = (ImageButton) buttons.getChildAt(i);
@@ -445,7 +445,7 @@ public class ContactsViewBuilderController extends TabViewBuilderController<Cont
                     @Override
                     public void onClick(DialogInterface dialog, int item) {
                         //get item's string
-                        String phoneNumber = phones.elementAt(item).toString();
+                        String phoneNumber = phones.elementAt(item);
 
                         //create the intent for establishing the phone call
                         Intent intent = new Intent(Intent.ACTION_CALL, Uri.fromParts("tel", phoneNumber, null));
@@ -482,7 +482,7 @@ public class ContactsViewBuilderController extends TabViewBuilderController<Cont
                     public void onClick(DialogInterface dialog, int item) {
                         // start chat screen activity
                         Intent intent = new Intent(context, BouncerChatActivity.class);
-                        intent.putExtra("address", phones.elementAt(item).toString());
+                        intent.putExtra("address", phones.elementAt(item));
                         BouncerApplication.getApplication().getActivityInForeground().startNewActivity(intent, false);
                     }
                 };

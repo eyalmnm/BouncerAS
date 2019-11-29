@@ -1,6 +1,5 @@
 package com.em_projects.infra.activity;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -22,7 +22,7 @@ import com.em_projects.infra.views.controllers.ViewController;
 
 import java.util.Stack;
 
-public abstract class BasicActivity extends Activity {
+public abstract class BasicActivity extends AppCompatActivity {
     private static final String TAG = "BasicActivity";
 
     public static ProgressDialog s_gauge = null;

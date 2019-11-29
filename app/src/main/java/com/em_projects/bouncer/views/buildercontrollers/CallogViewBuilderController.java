@@ -24,12 +24,12 @@ import com.em_projects.bouncer.BouncerChatActivity;
 import com.em_projects.bouncer.R;
 import com.em_projects.bouncer.model.CallLogElement;
 import com.em_projects.bouncer.repositories.CallLogsRepository;
-import com.em_projects.bouncer.utils.Utils;
 import com.em_projects.bouncer.views.model.CallogListViewModel;
 import com.em_projects.bouncer.views.model.CallogViewModel;
 import com.em_projects.infra.views.buildercontrollers.TabViewBuilderController;
 import com.em_projects.infra.views.controllers.ViewController;
 import com.em_projects.utils.StringUtil;
+import com.em_projects.utils.Utils;
 
 import java.util.Collections;
 import java.util.Date;
@@ -51,7 +51,7 @@ public class CallogViewBuilderController extends TabViewBuilderController<Callog
     public void attachController(final View view) {
         Log.d(TAG, "attachController");
         //get the search textfield and attach its listener
-        EditText searchTxt = (EditText) view.findViewById(R.id.search_txt);
+        EditText searchTxt = view.findViewById(R.id.search_txt);
         searchTxt.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -76,7 +76,7 @@ public class CallogViewBuilderController extends TabViewBuilderController<Callog
         });
 
         //get callogs list view and set its adapter
-        ListView lv = (ListView) view.findViewById(R.id.list_view);
+        ListView lv = view.findViewById(R.id.list_view);
         lv.setAdapter(m_adapter);
     }
 
@@ -215,12 +215,12 @@ public class CallogViewBuilderController extends TabViewBuilderController<Callog
             }
 
             //set call indicator image
-            ImageView callIndicator = (ImageView) convertView.findViewById(R.id.call_indicator);
+            ImageView callIndicator = convertView.findViewById(R.id.call_indicator);
             callIndicator.setBackgroundResource(callIndicatorResourceId);
 
             //hold caller name and number textfields
-            TextView callerName = (TextView) convertView.findViewById(R.id.display_name);
-            TextView phoneNumber = (TextView) convertView.findViewById(R.id.phone_number);
+            TextView callerName = convertView.findViewById(R.id.display_name);
+            TextView phoneNumber = convertView.findViewById(R.id.phone_number);
 
             //holds caller name and phone number
             String name = cvm.CallerName;
@@ -249,11 +249,11 @@ public class CallogViewBuilderController extends TabViewBuilderController<Callog
             phoneNumber.setText(number);
 
             //set call date-time
-            TextView date = (TextView) convertView.findViewById(R.id.date);
+            TextView date = convertView.findViewById(R.id.date);
             date.setText(String.valueOf(new Date(call.CallTime).toLocaleString()));
 
             //get buttons layout
-            LinearLayout buttons = (LinearLayout) convertView.findViewById(R.id.buttons);
+            LinearLayout buttons = convertView.findViewById(R.id.buttons);
 
             //display buttons only in case we have a phone number
             if (!StringUtil.isNullOrEmpty(call.CallerNumber) && !call.CallerNumber.equals("-2")) {
